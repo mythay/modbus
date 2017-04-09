@@ -10,7 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/goburrow/serial"
+	"fmt"
+
+	"github.com/tarm/serial"
 )
 
 const (
@@ -44,7 +46,9 @@ func (mb *serialPort) Connect() (err error) {
 // connect connects to the serial port if it is not connected. Caller must hold the mutex.
 func (mb *serialPort) connect() error {
 	if mb.port == nil {
-		port, err := serial.Open(&mb.Config)
+		port, err := serial.OpenPort(&mb.Config)
+		fmt.Println(err, 1)
+
 		if err != nil {
 			return err
 		}

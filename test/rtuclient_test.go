@@ -10,26 +10,29 @@ import (
 	"testing"
 
 	"github.com/mythay/modbus"
+	"github.com/tarm/serial"
 )
 
 const (
-	rtuDevice = "/dev/pts/21"
+	rtuDevice = "/dev/pts/12"
 )
 
 func TestRTUClient(t *testing.T) {
 	// Diagslave does not support broadcast id.
 	handler := modbus.NewRTUClientHandler(rtuDevice)
+	defer handler.Close()
 	ClientTestAll(t, modbus.NewClient(handler))
 }
 
 func TestRTUClientAdvancedUsage(t *testing.T) {
 	handler := modbus.NewRTUClientHandler(rtuDevice)
-	handler.BaudRate = 19200
-	handler.DataBits = 8
-	handler.Parity = "E"
+	handler.Baud = 19200
+	handler.Size = 8
+	handler.Parity = serial.ParityEven
 	handler.StopBits = 1
 	handler.Logger = log.New(os.Stdout, "rtu: ", log.LstdFlags)
 	err := handler.Connect()
+	defer handler.Close()
 	if err != nil {
 		t.Fatal(err)
 	}

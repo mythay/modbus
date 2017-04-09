@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io"
 	"time"
+
+	"github.com/tarm/serial"
 )
 
 const (
@@ -25,9 +27,13 @@ type RTUClientHandler struct {
 // NewRTUClientHandler allocates and initializes a RTUClientHandler.
 func NewRTUClientHandler(address string) *RTUClientHandler {
 	handler := &RTUClientHandler{}
-	handler.Address = address
-	handler.Timeout = serialTimeout
+	handler.Name = address
+	handler.ReadTimeout = serialTimeout
 	handler.IdleTimeout = serialIdleTimeout
+	handler.Baud = 19200
+	handler.Size = 8
+	handler.Parity = serial.ParityEven
+	handler.StopBits = 1
 	return handler
 }
 
@@ -173,12 +179,12 @@ func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err
 func (mb *rtuSerialTransporter) calculateDelay(chars int) time.Duration {
 	var characterDelay, frameDelay int // us
 
-	if mb.BaudRate <= 0 || mb.BaudRate > 19200 {
+	if mb.Baud <= 0 || mb.Baud > 19200 {
 		characterDelay = 750
 		frameDelay = 1750
 	} else {
-		characterDelay = 15000000 / mb.BaudRate
-		frameDelay = 35000000 / mb.BaudRate
+		characterDelay = 15000000 / mb.Baud
+		frameDelay = 35000000 / mb.Baud
 	}
 	return time.Duration(characterDelay*chars+frameDelay) * time.Microsecond
 }

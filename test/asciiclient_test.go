@@ -9,6 +9,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/tarm/serial"
+
 	"github.com/mythay/modbus"
 )
 
@@ -24,9 +26,9 @@ func TestASCIIClient(t *testing.T) {
 
 func TestASCIIClientAdvancedUsage(t *testing.T) {
 	handler := modbus.NewASCIIClientHandler(asciiDevice)
-	handler.BaudRate = 19200
-	handler.DataBits = 8
-	handler.Parity = "E"
+	handler.Baud = 19200
+	handler.Size = 8
+	handler.Parity = serial.ParityEven
 	handler.StopBits = 1
 	handler.Logger = log.New(os.Stdout, "ascii: ", log.LstdFlags)
 	err := handler.Connect()
