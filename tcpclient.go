@@ -52,7 +52,6 @@ type tcpPackager struct {
 	// For synchronization between messages of server & client
 	transactionId uint32
 	// Broadcast address is 0
-	SlaveId byte
 }
 
 // Encode adds modbus application protocol header:
@@ -62,7 +61,7 @@ type tcpPackager struct {
 //  Unit identifier: 1 byte
 //  Function code: 1 byte
 //  Data: n bytes
-func (mb *tcpPackager) Encode(pdu *ProtocolDataUnit) (adu []byte, err error) {
+func (mb *tcpPackager) Encode(pdu *PDUwithSlaveid) (adu []byte, err error) {
 	adu = make([]byte, tcpHeaderSize+1+len(pdu.Data))
 
 	// Transaction identifier
@@ -74,7 +73,7 @@ func (mb *tcpPackager) Encode(pdu *ProtocolDataUnit) (adu []byte, err error) {
 	length := uint16(1 + 1 + len(pdu.Data))
 	binary.BigEndian.PutUint16(adu[4:], length)
 	// Unit identifier
-	adu[6] = mb.SlaveId
+	adu[6] = pdu.SlaveID
 
 	// PDU
 	adu[tcpHeaderSize] = pdu.FunctionCode
@@ -111,7 +110,7 @@ func (mb *tcpPackager) Verify(aduRequest []byte, aduResponse []byte) (err error)
 //  Protocol identifier: 2 bytes
 //  Length: 2 bytes
 //  Unit identifier: 1 byte
-func (mb *tcpPackager) Decode(adu []byte) (pdu *ProtocolDataUnit, err error) {
+func (mb *tcpPackager) Decode(adu []byte) (pdu *PDUwithSlaveid, err error) {
 	// Read length value in the header
 	length := binary.BigEndian.Uint16(adu[4:])
 	pduLength := len(adu) - tcpHeaderSize
@@ -119,8 +118,9 @@ func (mb *tcpPackager) Decode(adu []byte) (pdu *ProtocolDataUnit, err error) {
 		err = fmt.Errorf("modbus: length in response '%v' does not match pdu data length '%v'", length-1, pduLength)
 		return
 	}
-	pdu = &ProtocolDataUnit{}
+	pdu = &PDUwithSlaveid{}
 	// The first byte after header is function code
+	pdu.SlaveID = adu[tcpHeaderSize-1]
 	pdu.FunctionCode = adu[tcpHeaderSize]
 	pdu.Data = adu[tcpHeaderSize+1:]
 	return

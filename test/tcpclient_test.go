@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/goburrow/modbus"
+	"github.com/mythay/modbus"
 )
 
 const (
@@ -25,21 +25,20 @@ func TestTCPClient(t *testing.T) {
 func TestTCPClientAdvancedUsage(t *testing.T) {
 	handler := modbus.NewTCPClientHandler(tcpDevice)
 	handler.Timeout = 5 * time.Second
-	handler.SlaveId = 1
 	handler.Logger = log.New(os.Stdout, "tcp: ", log.LstdFlags)
 	handler.Connect()
 	defer handler.Close()
 
 	client := modbus.NewClient(handler)
-	results, err := client.ReadDiscreteInputs(15, 2)
+	results, err := client.ReadDiscreteInputs(17, 15, 2)
 	if err != nil || results == nil {
 		t.Fatal(err, results)
 	}
-	results, err = client.WriteMultipleRegisters(1, 2, []byte{0, 3, 0, 4})
+	results, err = client.WriteMultipleRegisters(17, 1, 2, []byte{0, 3, 0, 4})
 	if err != nil || results == nil {
 		t.Fatal(err, results)
 	}
-	results, err = client.WriteMultipleCoils(5, 10, []byte{4, 3})
+	results, err = client.WriteMultipleCoils(17, 5, 10, []byte{4, 3})
 	if err != nil || results == nil {
 		t.Fatal(err, results)
 	}

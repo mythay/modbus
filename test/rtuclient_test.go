@@ -9,17 +9,16 @@ import (
 	"os"
 	"testing"
 
-	"github.com/goburrow/modbus"
+	"github.com/mythay/modbus"
 )
 
 const (
-	rtuDevice = "/dev/pts/6"
+	rtuDevice = "/dev/pts/21"
 )
 
 func TestRTUClient(t *testing.T) {
 	// Diagslave does not support broadcast id.
 	handler := modbus.NewRTUClientHandler(rtuDevice)
-	handler.SlaveId = 17
 	ClientTestAll(t, modbus.NewClient(handler))
 }
 
@@ -29,7 +28,6 @@ func TestRTUClientAdvancedUsage(t *testing.T) {
 	handler.DataBits = 8
 	handler.Parity = "E"
 	handler.StopBits = 1
-	handler.SlaveId = 11
 	handler.Logger = log.New(os.Stdout, "rtu: ", log.LstdFlags)
 	err := handler.Connect()
 	if err != nil {
@@ -38,11 +36,11 @@ func TestRTUClientAdvancedUsage(t *testing.T) {
 	defer handler.Close()
 
 	client := modbus.NewClient(handler)
-	results, err := client.ReadDiscreteInputs(15, 2)
+	results, err := client.ReadDiscreteInputs(11, 15, 2)
 	if err != nil || results == nil {
 		t.Fatal(err, results)
 	}
-	results, err = client.ReadWriteMultipleRegisters(0, 2, 2, 2, []byte{1, 2, 3, 4})
+	results, err = client.ReadWriteMultipleRegisters(11, 0, 2, 2, 2, []byte{1, 2, 3, 4})
 	if err != nil || results == nil {
 		t.Fatal(err, results)
 	}

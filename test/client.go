@@ -7,14 +7,14 @@ package test
 import (
 	"testing"
 
-	"github.com/goburrow/modbus"
+	"github.com/mythay/modbus"
 )
 
 func ClientTestReadCoils(t *testing.T, client modbus.Client) {
 	// Read discrete outputs 20-38:
 	address := uint16(0x0013)
 	quantity := uint16(0x0013)
-	results, err := client.ReadCoils(address, quantity)
+	results, err := client.ReadCoils(1, address, quantity)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func ClientTestReadDiscreteInputs(t *testing.T, client modbus.Client) {
 	// Read discrete inputs 197-218
 	address := uint16(0x00C4)
 	quantity := uint16(0x0016)
-	results, err := client.ReadDiscreteInputs(address, quantity)
+	results, err := client.ReadDiscreteInputs(1, address, quantity)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func ClientTestReadHoldingRegisters(t *testing.T, client modbus.Client) {
 	// Read registers 108-110
 	address := uint16(0x006B)
 	quantity := uint16(0x0003)
-	results, err := client.ReadHoldingRegisters(address, quantity)
+	results, err := client.ReadHoldingRegisters(1, address, quantity)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +47,7 @@ func ClientTestReadInputRegisters(t *testing.T, client modbus.Client) {
 	// Read input register 9
 	address := uint16(0x0008)
 	quantity := uint16(0x0001)
-	results, err := client.ReadInputRegisters(address, quantity)
+	results, err := client.ReadInputRegisters(1, address, quantity)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +58,7 @@ func ClientTestWriteSingleCoil(t *testing.T, client modbus.Client) {
 	// Write coil 173 ON
 	address := uint16(0x00AC)
 	value := uint16(0xFF00)
-	results, err := client.WriteSingleCoil(address, value)
+	results, err := client.WriteSingleCoil(1, address, value)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,7 +69,7 @@ func ClientTestWriteSingleRegister(t *testing.T, client modbus.Client) {
 	// Write register 2 to 00 03 hex
 	address := uint16(0x0001)
 	value := uint16(0x0003)
-	results, err := client.WriteSingleRegister(address, value)
+	results, err := client.WriteSingleRegister(1, address, value)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func ClientTestWriteMultipleCoils(t *testing.T, client modbus.Client) {
 	address := uint16(0x0013)
 	quantity := uint16(0x000A)
 	values := []byte{0xCD, 0x01}
-	results, err := client.WriteMultipleCoils(address, quantity, values)
+	results, err := client.WriteMultipleCoils(1, address, quantity, values)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,7 +93,7 @@ func ClientTestWriteMultipleRegisters(t *testing.T, client modbus.Client) {
 	address := uint16(0x0001)
 	quantity := uint16(0x0002)
 	values := []byte{0x00, 0x0A, 0x01, 0x02}
-	results, err := client.WriteMultipleRegisters(address, quantity, values)
+	results, err := client.WriteMultipleRegisters(1, address, quantity, values)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func ClientTestMaskWriteRegisters(t *testing.T, client modbus.Client) {
 	address := uint16(0x0004)
 	andMask := uint16(0x00F2)
 	orMask := uint16(0x0025)
-	results, err := client.MaskWriteRegister(address, andMask, orMask)
+	results, err := client.MaskWriteRegister(1, address, andMask, orMask)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,7 +119,7 @@ func ClientTestReadWriteMultipleRegisters(t *testing.T, client modbus.Client) {
 	writeAddress := uint16(0x000E)
 	writeQuantity := uint16(0x0003)
 	values := []byte{0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF}
-	results, err := client.ReadWriteMultipleRegisters(address, quantity, writeAddress, writeQuantity, values)
+	results, err := client.ReadWriteMultipleRegisters(1, address, quantity, writeAddress, writeQuantity, values)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,7 +129,7 @@ func ClientTestReadWriteMultipleRegisters(t *testing.T, client modbus.Client) {
 func ClientTestReadFIFOQueue(t *testing.T, client modbus.Client) {
 	// Read queue starting at the pointer register 1246
 	address := uint16(0x04DE)
-	results, err := client.ReadFIFOQueue(address)
+	results, err := client.ReadFIFOQueue(1, address)
 	// Server not implemented
 	if err != nil {
 		AssertEquals(t, "modbus: exception '1' (illegal function), function '152'", err.Error())

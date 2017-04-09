@@ -42,6 +42,7 @@ const (
 
 // ModbusError implements error interface.
 type ModbusError struct {
+	SlaveID       byte
 	FunctionCode  byte
 	ExceptionCode byte
 }
@@ -80,10 +81,16 @@ type ProtocolDataUnit struct {
 	Data         []byte
 }
 
+//PDUwithSlaveid PDU with a slave id before
+type PDUwithSlaveid struct {
+	SlaveID byte
+	ProtocolDataUnit
+}
+
 // Packager specifies the communication layer.
 type Packager interface {
-	Encode(pdu *ProtocolDataUnit) (adu []byte, err error)
-	Decode(adu []byte) (pdu *ProtocolDataUnit, err error)
+	Encode(pdu *PDUwithSlaveid) (adu []byte, err error)
+	Decode(adu []byte) (pdu *PDUwithSlaveid, err error)
 	Verify(aduRequest []byte, aduResponse []byte) (err error)
 }
 
